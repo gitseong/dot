@@ -43,12 +43,16 @@ module.exports = (server)=>{
 
         socket.emit('CONNECTION', connectionMsg);
 
-        //2. CREATE_ROOM
-        socket.on('CREATE_ROOM', (data)=>{
+        //2. 방 코드 생성 이벤트
+        socket.on('ROOM_CODE', (data)=>{
+
+        });
+        //3. 방 생성 이벤트
+        socket.on('ROOM', (data)=>{
 
         });
         
-        //3. PICK
+        //3. 사용자 위치 입력 이벤트
         socket.on('PICK', (data)=>{
             let return_date = {
                 status : 200,
@@ -61,7 +65,7 @@ module.exports = (server)=>{
 
         });
         
-        //4. COMPLETE
+        //4. 입력 완료 이벤트
         socket.on('COMPLETE', (data)=>{
             // 레디스에서 room이름의 데이터를 가져와서
             // 위도 경도 정보를 뽑아내서
@@ -71,8 +75,8 @@ module.exports = (server)=>{
             
         });
         
-        //5. RELOAD_ROOM
-        socket.on('RELOAD_ROOM', (data)=>{
+        //5. 기존 방정보 리스트
+        socket.on('ROOM_LIST', (data)=>{
 
         });
         
