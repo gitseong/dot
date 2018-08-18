@@ -5,7 +5,7 @@ let path = require('path');
 let server = require("http").createServer(app);
 let indexRouter = require('./routes/index');
 
-let socketModuleLoader= require('./modules/socket_module');
+let socketModuleLoader= require('./private_modules/socket');
 
 // app.set
 app.set('views', path.join(__dirname, 'views'));
