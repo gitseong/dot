@@ -3,12 +3,26 @@ module.exports = (server)=>{
     let io = require('socket.io')(server);
     let redis = require('redis');
     let client = redis.createClient();
+    let randomstring = require('randomstring');
 
     client.on('error', (err)=>{
         console.log(err);
     });
 
 
+    // client.hgetall('asdasd',(error, result)=>{
+    //     if(error){
+    //         console.log("error");
+    //         console.log(error);
+    //         return ;
+    //     }
+    //     console.log('success');
+    //     console.log(result);
+    //     if(result)
+    //         console.log("asdasd");
+    //     else
+    //         console.log("123123");
+    // })
     // client.set("testKey", "testValue", redis.print);
     // client.hmset('frameworks', {
     //     'javascript': 'AngularJS',
@@ -45,7 +59,26 @@ module.exports = (server)=>{
 
         //2. 방 코드 생성 이벤트
         socket.on('ROOM_CODE', (data)=>{
+            
+            let return_data  = {};
 
+            try{
+                
+                // 중복될 확률
+                // 1/(26+26+9)^10 => 1/2^60;
+                let room_code = randomstring.generate(10);
+
+                return_data.status = 1;
+                return_data.room_code = room_code;
+                return_data.msg = "방 코드 생성 성공";
+            }
+            catch(error){
+                return_data.status = 0;
+                return_data.msg = "방 코드 생성 오류";
+                console.log(error);
+            }
+
+            socket.emit('ROOM_CODE', return_data);
         });
         //3. 방 생성 이벤트
         socket.on('ROOM', (data)=>{
@@ -54,15 +87,34 @@ module.exports = (server)=>{
         
         //3. 사용자 위치 입력 이벤트
         socket.on('PICK', (data)=>{
-            let return_date = {
-                status : 200,
-                room : data.room,
-                lat : data.lat,
-                long : data.long
-            };
+           
+            let return_data = {};
+            let room_code = data.room_code;
 
-            io.to(data.room).emit('PICK',return_data);
+            client.hmset(data.room_code, (error, data)=>{
 
+                //에러 발생 예외 처리
+                if(error){
+                    return_data.status = 0;
+                    return_data.msg ="사용자 위치 입력 redis 접근 에러";
+                    socket.emit('PICK', return_data);
+                    return ;
+                }    
+
+
+                //데이터 만들어 주고
+                return_data = {
+                    status : 1,
+                    room_code : data.room_code,
+                    room_name : data.room_name,
+                    lat : data.lat,
+                    long : data.long,
+                    msg : '사용자 위치 입력 이벤트 발생'
+                };
+
+                //방에 속한 모든 사람들에게 데이터를 보낸다.
+                io.to(data.room_code).emit('PICK', return_data);
+            });
         });
         
         //4. 입력 완료 이벤트
