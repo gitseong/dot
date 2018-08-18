@@ -35,6 +35,7 @@ module.exports = (server)=>{
         console.log('[SERVER] => Connection Establish....');
         socket.emit('connection', 'SUCCESS');
 
+        socket.emit('connection', {msg: "hello"});
         // 방 이름 입력했을때 이벤트
         socket.on('APP_GROUP', (data)=>{
             
