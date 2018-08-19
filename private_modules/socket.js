@@ -1,14 +1,4 @@
 
-// 에러 객체 생성 함수
-function errorInfo(status, msg){
-    
-    let result = {
-        status : status,
-        msg : msg
-    };
-
-    return result;
-};
 
 module.exports = (server)=>{
 
@@ -77,9 +67,9 @@ module.exports = (server)=>{
                 // 중복될 확률
                 // 1/(26+26+9)^10 => 1/2^60;
                 resutl = {
-                    status : 1,
-                    room_code : randomstring.generate(10),
-                    msg : "방 코드 생성 성공"
+                    "status" : 1,
+                    "room_code" : randomstring.generate(10),
+                    "msg" : "방 코드 생성 성공"
                 };
             }
             catch(error){
@@ -111,10 +101,10 @@ module.exports = (server)=>{
                     
                     
                     result = {
-                        status : 1,
-                        room_code : data.room_code,
-                        room_name : data.room_name,
-                        msg : "방 생성 성공"
+                        "status" : 1,
+                        "room_code" : data.room_code,
+                        "room_name" : data.room_name,
+                        "msg" : "방 생성 성공"
                     };  
                     console.log(reply);
 
@@ -135,8 +125,8 @@ module.exports = (server)=>{
             
             //사용자가 찍은 위치의 위도, 경도
             let pos = {
-                lat : data.lat,
-                long : data.long
+                "lat" : data.lat,
+                "long" : data.long
             };
 
             //room_code, socket id, 위치정보
@@ -154,12 +144,12 @@ module.exports = (server)=>{
                     
                     //데이터 만들어 주고
                     result = {
-                        status : 1,
-                        room_code : data.room_code,
-                        room_name : data.room_name,
-                        lat : data.lat,
-                        long : data.long,
-                        msg : '사용자 위치 입력 이벤트 발생'
+                        "status" : 1,
+                        "room_code" : data.room_code,
+                        "room_name" : data.room_name,
+                        "lat" : data.lat,
+                        "long" : data.long,
+                        "msg" : '사용자 위치 입력 이벤트 발생'
                     }; 
                     console.log(reply);
                          
@@ -187,8 +177,42 @@ module.exports = (server)=>{
         
         //5. 기존 방정보 리스트
         socket.on('ROOM_LIST', (data)=>{
-
+            
+            let list = data.room_codes;
         });
-
     });
+
+    // 에러 객체 생성 함수
+    function errorInfo(status, msg){
+        
+        let result = {
+            "status" : status,
+            "msg" : msg
+        };
+
+        return result;
+    };
+
+    // 방코드를 키로 하여 방정보를 찾는다.
+    function findRoom(room_code, callback){        
+        client.hgetall(room_code, (error, reply)=>{
+            let result;
+
+            try{
+                if(error)
+                    throw new Error("[방 코드 :], "+room_code+"방 정보 찾기 에러" );
+                    
+                result = reply;
+                console.log(reply);
+            }
+            catch(exception){
+                
+                result = errorInfo(0, "방 정보 찾기 실패");
+                console.log(exception);
+            }
+            finally{
+                callback(result);
+            }
+        });
+    }
 }
