@@ -178,7 +178,17 @@ module.exports = (server)=>{
         //5. 기존 방정보 리스트
         socket.on('ROOM_LIST', (data)=>{
             
-            let list = data.room_codes;
+            let list = {};
+
+            // 방정보들을 가져온다.
+            data.room_codes.forEach(code => {
+                findRoom(room, function(reply){
+                    list[code] = reply;
+                });
+            });
+
+            // 방정보 리스트 이벤트 발생.
+            socket.emit('ROOM_LIST', list);
         });
     });
 
