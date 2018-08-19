@@ -8,47 +8,6 @@ module.exports = (server)=>{
     let client = redis.createClient();
     let randomstring = require('randomstring');
 
-    client.on('error', (err)=>{
-        console.log(err);
-    });
-
-
-    // client.hgetall('asdasd',(error, result)=>{
-    //     if(error){
-    //         console.log("error");
-    //         console.log(error);
-    //         return ;
-    //     }
-    //     console.log('success');
-    //     console.log(result);
-    //     if(result)
-    //         console.log("asdasd");
-    //     else
-    //         console.log("123123");
-    // })
-    // client.set("testKey", "testValue", redis.print);
-    // client.hmset('frameworks', {
-    //     'javascript': 'AngularJS',
-    //     'css': 'Bootstrap',
-    //     'node': 'Express'
-    // });
-
-    // client.hgetall('frameworks', (error, reply)=>{
-    //     console.log(error);
-    //     console.log(reply);
-    // });
-
-    // 필요한 이벤트
-    /*
-        
-        1. CONNECTION 
-        2. CREATE_ROOM
-        3. PICK
-        4. COMPLETE
-        5. RELOAD_ROOM
-
-    */
-    
     //1. CONNECTION
     io.on('connection',(socket)=>{
 
@@ -172,6 +131,20 @@ module.exports = (server)=>{
             // 중점 좌료를 계산
             // API를 호출하여 추천 위치리스트를 받음.
             // 사용자들에게 뿌려준다.
+
+            let pos = {
+                "lat" : 37.4979462,
+                "long" : 127.025427
+            };
+            
+            let result = {
+                "status" : 1,
+                "room_code" : data.room_code,
+                "pick_list" : pos,
+                "msg" : "입력 완료 이벤트 성공"
+            }
+
+            io.to(data.room_code).emit('COMPLETE', result);
             
         });
         
@@ -215,7 +188,7 @@ module.exports = (server)=>{
 
             try{
                 if(error)
-                    throw new Error("[방 코드 :], "+room_code+"방 정보 찾기 에러" );
+                    throw new Error("[방 코드 : "+room_code+"], 방 정보 찾기 에러" );
                     
                 result = reply;
                 console.log(reply);
