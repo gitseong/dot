@@ -10,12 +10,6 @@ function errorInfo(status, msg){
     return result;
 };
 
-//에러 처리 함수
-function errorProcess(error, msg){
-    console.log(error);
-    throw new Error(msg);
-};
-
 module.exports = (server)=>{
 
     
@@ -115,13 +109,15 @@ module.exports = (server)=>{
                     if(error)
                         throw new Error("방 생성중 에러 발생");
                     
+                    
                     result = {
                         status : 1,
                         room_code : data.room_code,
                         room_name : data.room_name,
                         msg : "방 생성 성공"
                     };  
-                
+                    console.log(reply);
+
                 }
                 catch(error){
                     result = errorInfo(0, "방 생성 중 에러 발생");
@@ -136,8 +132,21 @@ module.exports = (server)=>{
         socket.on('PICK', (data)=>{
            
             let result = {};
+            
+            //사용자가 찍은 위치의 위도, 경도
+            let pos = {
+                lat : data.lat,
+                long : data.long
+            };
 
-            client.hmset(data.room_code, (error, data)=>{
+            //room_code, socket id, 위치정보
+            let params = [
+                data.room_code,             
+                socket_id, JSON.stringify(pos)
+            ];
+
+            // room_code 에 사용자의 위치 정보를 string으로 저장
+            client.hmset(params, (error, reply)=>{
 
                 try{
                     if(error)
@@ -151,7 +160,9 @@ module.exports = (server)=>{
                         lat : data.lat,
                         long : data.long,
                         msg : '사용자 위치 입력 이벤트 발생'
-                    };      
+                    }; 
+                    console.log(reply);
+                         
                 }
                 catch(error){
                     result = errorInfo(0, "사용자 위치 입력 redis 접근 에러");
@@ -178,70 +189,6 @@ module.exports = (server)=>{
         socket.on('ROOM_LIST', (data)=>{
 
         });
-        
-        // 방 이름 입력했을때 이벤트
-        socket.on('APP_GROUP', (data)=>{
-            
-            //입력으로 넘어온 방 이름의 정보를 가져온다.
-            let isExistRoom =  io.sockets.adapter.rooms[data.room];
-            if(typeof(isExistRoom) === 'undefined'){
-                // 처음 생성하는 방이면 친구초대 화면으로
-                socket.emit('FRIEND_INVITE',{});
-            }
-            else{
-                // 기존에 생성된 방이면 지도검색 화면으로
-                socket.emit('STEP1', {});
-                console.log('기존에 있는 방');
-            }
 
-            socket.join(data.room);
-            io.to(data.room).emit("chat", "누군가 입장했어");
-            console.log(socket.rooms[Object.keys(socket.rooms)[0]]);
-
-        });
-
-        //사용자별 위치 입력 이벤트
-        socket.on('MAP_PICK', (data)=>{
-
-            let lat = data.lat;
-            let long = data.long;
-            
-            let point = {
-                lat : lat,
-                long : long
-            };
-
-            io.to(data.room).emit("MAP_PICK", point);
-            
-            
-        });
-
-        //완료 버튼 눌렀을때
-        socket.on('COMPLETE', (data)=>{
-            // 중점찾기 알고리즘돌리고
-            
-            let point = {
-                lat : "위도",
-                long : "경도"
-            };
-
-            io.to(data.room).emit('COMPLETE', point );
-        });
-
-
-        //추천 리스트에서 선택 이벤트
-        socket.on('LIST_PICK', (data)=>{
-
-        })
-        socket.on('chat', (data)=>{
-            console.log(data);
-            
-            let name = socket.name = data.name;
-            let room = socket.room = data.room;
-            
-            socket.join(room);
-            io.emit('chat', data.msg);
-
-        })
     });
 }
