@@ -16,34 +16,58 @@ module.exports = (server)=>{
         console.log(socket.handshake.address);
         socket.emit('CONNECTION', {msg : "SUCCESS"});
 
-        //2. 방 코드 생성 이벤트
-        socket.on('ROOM_CODE', (data)=>{
+        //2. 방 입장 이벤트
+        socket.on('ENTRANCE', (data)=>{
             
-            let result  = {};
+            let result = {};
+            let params = [
+                data.room_code,
+                "user_name" , data.user_name
+            ];
 
-            try{
-                
-                // 중복될 확률
-                // 1/(26+26+9)^10 => 1/2^60;
-                resutl = {
-                    "status" : 1,
-                    "room_code" : randomstring.generate(10),
-                    "msg" : "방 코드 생성 성공"
-                };
-            }
-            catch(error){
+            
+            client.hmset(params, (error, data)=>{
 
-                result = errorInfo(0, "방 코드 생성 에러");
-                console.log(error);
-            }
-            finally{
-                socket.emit('ROOM_CODE', result);
-            }
+                try{
+                    if(error)
+                        throw new Error(error);
 
+                    findRoom(data.room_code, function(reply){
+                        result = {
+                            "status" : 1,
+                            "room_info" : reply,
+                            "msg" : "방에 입장 하였습니다"
+                        };
+                    });
+                }
+                catch(error){
+                    console.log(error);
+                    result = errorInfo(0, "방 입장 하는중 에러가 발생하였습니다");
+
+                }
+                finally{
+                    socket.emit('ENTRANCE', result);
+                }
+            });
         });
+
+        socket.on('ROOM_INFO', (data)=>{
+            findRoom(data.room_code, function(reply){
+                let result = {
+                    "status" : 1,
+                    "room_info" : reply,
+                    "msg" : "방을 찾았습니다."
+                };
+                
+                socket.emit('ROOM_INFO', result);
+            });
+        });
+
         //3. 방 생성 이벤트
         socket.on('ROOM', (data)=>{
           
+            // 중복될 확률
+            // 1/(26+26+9)^10 => 1/2^60;
             let room_code = randomstring.generate(10);
 
             let params = [
