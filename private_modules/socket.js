@@ -44,8 +44,10 @@ module.exports = (server)=>{
         //3. 방 생성 이벤트
         socket.on('ROOM', (data)=>{
           
+            let room_code = randomstring.generate(10);
+
             let params = [
-                data.room.code
+                room_code,
                 ,"room_name", data.room_name
                 ,"room_status", "진행중",
             ];
@@ -61,7 +63,7 @@ module.exports = (server)=>{
                     
                     result = {
                         "status" : 1,
-                        "room_code" : data.room_code,
+                        "room_code" : room_code,
                         "room_name" : data.room_name,
                         "msg" : "방 생성 성공"
                     };  
