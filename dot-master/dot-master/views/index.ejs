@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Socket.io Chat Example</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container" style="padding-top: 100px;">
+  <div style="margin-left: 50px; margin-bottom: 35px;">
+      <h2>#여기닷(.dot)</h2>
+  </div>
+    <!-- <form class="form-inline"> -->
+    <form class="form-horizontal">      
+        <div class="col-xs-offset-1 col-xs-10">
+            <div class="input-group input-group-lg">
+              <input type="text" class="form-control" placeholder="ROOM CODE" id="room">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">JOIN</button>
+              </span>
+            </div><!-- /input-group -->
+          </div><!-- /.col-lg-6 -->
+    </form>
+    <ul id="chat"></ul>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    $(function() {
+      // 지정 namespace로 접속한다
+      
+      $("form").submit(function(e) {
+        e.preventDefault();
+    
+        var socket = io();
+        
+        // 서버로부터의 메시지가 수신되면
+        socket.on("chat", function(data) {
+          $("#chat").append($('<li>').text(data));
+        });
+
+        socket.on("connection", function(data){
+          $("#chat").append($('<li>').text('[FROM SERVER ] : '+data));
+            
+            var params = {
+              room : $('#room').val()
+            };
+            
+            socket.emit("APP_GROUP", params);
+            
+        });
+      });
+    });
+  </script>
+</body>
+</html>
