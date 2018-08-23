@@ -35,20 +35,27 @@
         var socket = io();
         
         // 서버로부터의 메시지가 수신되면
-        socket.on("chat", function(data) {
-          $("#chat").append($('<li>').text(data));
+        socket.on("ROOM", function(data) {
+          console.log(data);
+          //$("#chat").append($('<li>').text(data));
         });
 
-        socket.on("connection", function(data){
-          $("#chat").append($('<li>').text('[FROM SERVER ] : '+data));
+        socket.on("CONNECTION", function(data){
+          
+          console.log(data);
+          socket.emit('ROOM', {'room_name' : 'seong'});
+          //$("#chat").append($('<li>').text('[FROM SERVER ] : '+data));
             
-            var params = {
-              room : $('#room').val()
-            };
             
-            socket.emit("APP_GROUP", params);
+
+            // var params = {
+            //   room : $('#room').val()
+            // };
+            
+            // socket.emit("APP_GROUP", params);
             
         });
+        
       });
     });
   </script>
