@@ -43,7 +43,13 @@
         socket.on("CONNECTION", function(data){
           
           console.log(data);
-          socket.emit('ROOM', {'room_name' : 'seong'});
+          var clData = {
+            "room_code" : "1234567890",
+            "lat" : 37.4979462,
+            "long" : 127.025427
+          }
+
+          socket.emit('PICK', clData);
           //$("#chat").append($('<li>').text('[FROM SERVER ] : '+data));
             
             

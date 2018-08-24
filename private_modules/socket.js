@@ -112,7 +112,7 @@ module.exports = (server)=>{
             //room_code, socket id, 위치정보
             let params = [
                 data.room_code,             
-                socket_id, JSON.stringify(pos)
+                socket.id, JSON.stringify(pos)
             ];
 
             // room_code 에 사용자의 위치 정보를 string으로 저장
