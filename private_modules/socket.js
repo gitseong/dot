@@ -240,7 +240,7 @@ module.exports = (server)=>{
             }
             catch(exception){
                 
-                result = errorInfo(0, "방 정보 찾기 실패");
+                result = errorInfo(0, exception);
                 console.log(exception);
             }
             finally{
