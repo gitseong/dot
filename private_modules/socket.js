@@ -20,12 +20,8 @@ module.exports = (server)=>{
         socket.on('ENTRANCE', (data)=>{
             
             let result = {};
-            let params = [
-                data.room_code,
-                "user_name" , data.user_name
-            ];
+            let params = [ data.room_code, "user_name" , data.user_name ];
 
-            
             client.hmset(params, (error, data)=>{
 
                 try{
@@ -46,7 +42,7 @@ module.exports = (server)=>{
 
                 }
                 finally{
-                    socket.emit('ENTRANCE', result);
+                    io.to(data.room_code).emit('ENTRANCE', result);
                 }
             });
         });
