@@ -23,6 +23,7 @@ utils.findRoom = function(room_code, callback){
                 throw new Error("[방 코드 : "+room_code+"], 방 정보 찾기 에러" );
                 
             result = reply;
+            console.log('findRoom 함수 안에서');
             console.log(reply);
         }
         catch(exception){
