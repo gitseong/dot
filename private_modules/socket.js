@@ -22,12 +22,18 @@ module.exports = (server)=>{
             let result = {};
             let params = [ data.room_code, "user_name" , data.user_name ];
 
+            console.log(data);
+            console.log(data);
+            console.log(data);
+            console.log(data);
+            
             client.hmset(params, (error, data)=>{
 
+                
                 try{
                     if(error)
                         throw new Error(error);
-
+                    
                     findRoom(data.room_code, function(reply){
                         result = {
                             "status" : 1,
