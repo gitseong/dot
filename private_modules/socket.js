@@ -53,13 +53,19 @@ module.exports = (server)=>{
 
         socket.on('ROOM_INFO', (data)=>{
             findRoom(data.room_code, function(reply){
-                let result = {
-                    "status" : 1,
-                    "room_info" : reply,
-                    "msg" : "방을 찾았습니다."
-                };
                 
-                socket.emit('ROOM_INFO', result);
+                if(reply.status == 0){
+                    socket.emit('ROOM_INFO', reply);    
+                }
+                else{
+                    let result = {
+                        "status" : reply.status,
+                        "room_info" : reply,
+                        "msg" : reply.msg
+                    };
+                    
+                    socket.emit('ROOM_INFO', result);
+                }                
             });
         });
 
