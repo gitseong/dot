@@ -35,7 +35,7 @@
         var socket = io();
         
         // 서버로부터의 메시지가 수신되면
-        socket.on("ROOM", function(data) {
+        socket.on("ENTRANCE", function(data) {
           console.log(data);
           //$("#chat").append($('<li>').text(data));
         });
@@ -45,11 +45,10 @@
           console.log(data);
           var clData = {
             "room_code" : "1234567890",
-            "lat" : 37.4979462,
-            "long" : 127.025427
-          }
+            "user_name" : "seongRakWon"
+          };
 
-          socket.emit('PICK', clData);
+          socket.emit('ENTRANCE', clData);
           //$("#chat").append($('<li>').text('[FROM SERVER ] : '+data));
             
             
