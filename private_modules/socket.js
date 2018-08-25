@@ -4,6 +4,7 @@ module.exports = (server)=>{
 
     
     let io = require('socket.io')(server);
+    let util = require('./events/utils');
     
     // event 모듈
     let entrance    = require('./events/entrance'); 
@@ -18,10 +19,8 @@ module.exports = (server)=>{
 
         
         console.log('[SERVER] => Connection Establish....');
-        //console.log(socket.id);
-        //console.log(socket.handshake.address);
-        
         socket.emit('CONNECTION', {msg : "SUCCESS"});
+        //util.findCenter("asd");
 
         entrance(io, socket);       // 방 입장 이벤트
         room_info(io, socket);      // 방 정보 요청 이벤트

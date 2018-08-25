@@ -35,7 +35,7 @@
         var socket = io();
         
         // 서버로부터의 메시지가 수신되면
-        socket.on("ENTRANCE", function(data) {
+        socket.on("COMPLETE", function(data) {
           console.log(data);
           //$("#chat").append($('<li>').text(data));
         });
@@ -48,7 +48,8 @@
             "user_name" : "seongRakWon"
           };
 
-          socket.emit('ENTRANCE', clData);
+          console.log("COMPLETE");
+          socket.emit('COMPLETE', clData);
           //$("#chat").append($('<li>').text('[FROM SERVER ] : '+data));
             
             
