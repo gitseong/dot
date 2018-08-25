@@ -12,6 +12,7 @@ module.exports = function(io, socket){
         let result = {};
         let params = [data.room_code, socket.id, data.user_name];
         
+        // 먼저 방에 입장한 사용자를 저장 한 후
         client.hmset(params, (error, reply)=>{
 
             try{
@@ -35,17 +36,16 @@ module.exports = function(io, socket){
                         console.log(result);
                         io.to(data.room_code).emit('ENTRANCE', result); 
                     }
-               
                 });
             }
             catch(exception){
                 console.log(exception);
                 result = util.errorInfo(0, exception);
-
+                socket.emit('ENTRANCE', result);
             }
             finally{
-                socket.emit('ENTRANCE', result);
-                io.to(data.room_code).emit('ENTRANCE', result);
+                console.log('[ENTRANCE] 이벤트 발생');
+                console.log(result);
             }
         });
     });
